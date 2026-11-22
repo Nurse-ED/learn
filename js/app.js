@@ -69,10 +69,43 @@ function embed(url, type) {
     return `<div class="vid"><iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}" title="Presentation" allowfullscreen loading="lazy"></iframe></div><a class="btn ghost block" style="margin-top:10px" href="${esc(url)}" download target="_blank" rel="noopener">${icon("upload", 16)} Download presentation</a><p class="meta" style="margin-top:8px;text-align:center">If the slides don't load, use the download button.</p>`;
   if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) return `<video class="plain" controls playsinline src="${esc(url)}"></video>`;
   if (type === "pdf" || /\.pdf(\?|$)/i.test(url))
-    return `<iframe class="pdf" src="${esc(url)}" title="PDF"></iframe><a class="btn ghost block" style="margin-top:10px" href="${esc(url)}" target="_blank" rel="noopener">${icon("file")} Open PDF in new tab</a>`;
+    return `<div class="pdfv" data-pdf="${esc(url)}"><div class="empty"><div class="spinner" style="margin:0 auto 10px"></div>Loading PDF…</div></div><a class="btn ghost block" style="margin-top:10px" href="${esc(url)}" target="_blank" rel="noopener">${icon("file", 16)} Open PDF in new tab</a>`;
   if (type === "image" || type === "pamphlet" || /\.(png|jpe?g|gif|webp|svg)(\?|$)/i.test(url))
     return `<img class="full" src="${esc(url)}" alt=""><a class="btn ghost block" style="margin-top:10px" href="${esc(url)}" target="_blank" rel="noopener">Open full size</a>`;
   return `<a class="btn block" href="${esc(url)}" target="_blank" rel="noopener">${icon("link")} Open resource</a>`;
+}
+
+/* ---------- PDF viewer: draws the pages inside the app (phones can't show PDFs in an iframe) ---------- */
+let pdfLib;
+function loadPdfJs() {
+  return pdfLib ||= new Promise((ok, no) => {
+    const sc = document.createElement("script"); sc.src = "js/vendor/pdf.min.js?v=1";
+    sc.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = "js/vendor/pdf.worker.min.js?v=1"; ok(window.pdfjsLib); };
+    sc.onerror = () => no(new Error("Could not load the PDF viewer")); document.head.appendChild(sc);
+  });
+}
+async function renderPdf(box) {
+  const url = box.dataset.pdf;
+  try {
+    const lib = await loadPdfJs(), pdf = await lib.getDocument({ url }).promise;
+    box.innerHTML = `<div class="meta" style="text-align:center;margin-bottom:8px">${pdf.numPages} page${pdf.numPages > 1 ? "s" : ""} · scroll to read</div><div class="pages"></div>`;
+    const holder = box.querySelector(".pages"), first = await pdf.getPage(1), v1 = first.getViewport({ scale: 1 });
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); draw(+e.target.dataset.n, e.target); } }), { rootMargin: "800px 0px" });
+    async function draw(n, el) {
+      const pg = n === 1 ? first : await pdf.getPage(n), vp = pg.getViewport({ scale: 1 });
+      const scale = (el.clientWidth || box.clientWidth) / vp.width, dpr = Math.min(window.devicePixelRatio || 1, 2), cv = document.createElement("canvas");
+      cv.width = Math.floor(vp.width * scale * dpr); cv.height = Math.floor(vp.height * scale * dpr);
+      el.style.aspectRatio = `${vp.width} / ${vp.height}`; el.innerHTML = ""; el.appendChild(cv);
+      await pg.render({ canvasContext: cv.getContext("2d"), viewport: pg.getViewport({ scale: scale * dpr }) }).promise;
+    }
+    for (let n = 1; n <= pdf.numPages; n++) {
+      const d = document.createElement("div"); d.className = "pg"; d.dataset.n = n; d.style.aspectRatio = `${v1.width} / ${v1.height}`; d.setAttribute("aria-label", `Page ${n}`);
+      holder.appendChild(d); io.observe(d);
+    }
+  } catch (e) {
+    console.error(e);
+    box.innerHTML = `<div class="empty">⚠️ Couldn't show this PDF here.<br>Use the <b>Open PDF in new tab</b> button below.</div>`;
+  }
 }
 
 /* ---------- data ---------- */
@@ -106,6 +139,7 @@ function cprog(uid, cid) {
 }
 const enrolledIds = uid => S.enrolls.filter(e => e.user_id === uid).map(e => e.course_id);
 const isEnrolled = cid => enrolledIds(S.user.id).includes(cid);
+const courseDone = (uid, cid) => { const p = cprog(uid, cid); return p.total === 0 || p.done === p.total; };   // assessments unlock at 100%
 const nextLesson = (uid, cid) => { const d = doneSet(uid); return ordered(cid).find(l => !d.has(l.id)); };
 const bestAttempt = (uid, aid) => S.attempts.filter(a => a.user_id === uid && a.assessment_id === aid).sort((a, b) => b.score / (b.total || 1) - a.score / (a.total || 1))[0];
 const dayKey = d => { const x = new Date(d); return `${x.getFullYear()}-${x.getMonth() + 1}-${x.getDate()}`; };
@@ -266,7 +300,7 @@ function listCourses(list, uid) {
 function viewCourse(id) {
   const c = S.courses.find(x => x.id === id); if (!c) return go("#/courses");
   const uid = S.user.id, en = isEnrolled(id), p = cprog(uid, id), ls = ordered(id), d = doneSet(uid), nx = nextLesson(uid, id);
-  const mins = ls.reduce((s, l) => s + (l.minutes || 0), 0), asm = S.assessments.filter(a => a.course_id === id);
+  const mins = ls.reduce((s, l) => s + (l.minutes || 0), 0), asm = S.assessments.filter(a => a.course_id === id && courseDone(uid, id));
   shell(`${top("Course", { back: "#/courses" })}
     <div class="hero"><div class="lbl">${esc(c.category)}</div><div class="big">${esc(c.title)}</div><div class="lbl">${modsOf(id).length} modules · ${ls.length} lessons · ~${mins} min</div>${en ? bar(p.pct) : ""}<div class="emoji">${esc(c.emoji)}</div></div>
     <p style="margin:16px 2px">${esc(c.description)}</p>
@@ -323,6 +357,7 @@ function viewLesson(id) {
       ${nx ? `<a class="btn ghost" href="#/learn/${nx.id}" aria-label="Next lesson">${icon("chev", 18)}</a>` : ""}
     </div>`, { nav: false });
   if (l.type === "flashcards") drawFlash(l.cards || []);
+  document.querySelectorAll("[data-pdf]").forEach(renderPdf);
   document.getElementById("done")?.addEventListener("click", async () => {
     document.getElementById("done").disabled = true;
     const row = { user_id: uid, lesson_id: id, course_id: c.id };
@@ -347,7 +382,7 @@ function drawFlash(cards) {
 /* ---------- STUDENT: ASSESSMENTS ---------- */
 function nextAssessment(uid) {
   const ids = enrolledIds(uid);
-  return S.assessments.filter(a => ids.includes(a.course_id) && (S.counts[a.id] || 0) > 0)
+  return S.assessments.filter(a => ids.includes(a.course_id) && courseDone(uid, a.course_id) && (S.counts[a.id] || 0) > 0)
     .find(a => { const b = bestAttempt(uid, a.id); return !b || !b.passed; });
 }
 function assessRow(a, uid) {
@@ -356,16 +391,17 @@ function assessRow(a, uid) {
   return `<a class="item" href="#/quiz/${a.id}"><div class="tile ${tint(hash(a.id))}">📝</div><div class="grow"><b class="ellipsis">${esc(a.title)}</b><small>${esc(c?.title || "")} · ${n} questions · pass ${a.pass_mark}%</small></div>${chip}</a>`;
 }
 function viewAssess() {
-  const uid = S.user.id, ids = enrolledIds(uid), mine = S.assessments.filter(a => ids.includes(a.course_id)), nx = nextAssessment(uid);
+  const uid = S.user.id, ids = enrolledIds(uid), mine = S.assessments.filter(a => ids.includes(a.course_id) && courseDone(uid, a.course_id)), nx = nextAssessment(uid);
   const rest = mine.filter(a => a !== nx);
   shell(`${top("Assessments", { sub: "For the courses you're enrolled in" })}
     ${nx ? `<div class="hero"><div class="lbl">Up next</div><div class="big">${esc(nx.title)}</div><div class="lbl">${esc(S.courses.find(c => c.id === nx.course_id)?.title || "")} · ${S.counts[nx.id]} questions · pass ${nx.pass_mark}%</div><a class="btn white sm" style="margin-top:14px" href="#/quiz/${nx.id}">Start assessment ${icon("chev", 16)}</a><div class="emoji">📝</div></div>`
       : mine.length ? `<div class="card" style="text-align:center">🎉 <b>You're all caught up!</b><div class="meta">You've passed every available assessment.</div></div>` : ""}
     <div class="sec"><h2>${nx ? "All assessments" : "Assessments"}</h2></div>
-    <div class="stack">${mine.length ? (nx ? [nx, ...rest] : rest).map(a => assessRow(a, uid)).join("") : empty("📝", "Enroll in a course to see its assessments.<br><a href='#/courses'>Browse courses</a>")}</div>`);
+    <div class="stack">${mine.length ? (nx ? [nx, ...rest] : rest).map(a => assessRow(a, uid)).join("") : empty("📝", "Assessments appear here once you complete a course (100%).<br><a href='#/courses'>Go to my courses</a>")}</div>`);
 }
 async function viewQuiz(id) {
   const a = S.assessments.find(x => x.id === id); if (!a) return go("#/assess");
+  if (!isAdmin() && !courseDone(S.user.id, a.course_id)) { toast("Finish the whole course to unlock this assessment"); return go("#/course/" + a.course_id); }
   shell(`<div class="boot" style="height:60vh"><div class="spinner"></div></div>`, { nav: false });
   const { data, error } = await sb.rpc("get_quiz", { aid: id }); if (error) { fail(error); return go("#/assess"); }
   S.quiz = { a, qs: data, i: 0, ans: {}, result: null }; drawQuiz();
