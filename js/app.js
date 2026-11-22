@@ -564,14 +564,76 @@ async function viewAdminTest(id) {
   const a = S.assessments.find(x => x.id === id); if (!a) return go("#/admin/tests");
   const { data: qs, error } = await sb.from("questions").select("*").eq("assessment_id", id).order("position"); if (error) return fail(error);
   shell(`${top(esc(a.title), { back: "#/admin/tests", sub: `${esc(S.courses.find(c => c.id === a.course_id)?.title || "")} · pass ${a.pass_mark}% · ${a.published ? "Published" : "Draft"}` })}
-    <div class="row" style="flex-wrap:wrap"><button class="btn ghost sm" id="et">${icon("edit", 14)} Edit details</button><button class="btn sm" id="aq">${icon("plus", 14)} Add question</button><button class="btn danger sm" id="dt">${icon("trash", 14)} Delete</button></div>
+    <div class="row" style="flex-wrap:wrap"><button class="btn ghost sm" id="et">${icon("edit", 14)} Edit details</button><button class="btn sm" id="aq">${icon("plus", 14)} Add question</button><button class="btn sm" id="iq">${icon("upload", 14)} Import questions</button><button class="btn danger sm" id="dt">${icon("trash", 14)} Delete</button></div>
     <div class="stack" style="margin-top:14px">${qs.map((q, n) => `<div class="card"><div class="row between"><b>${n + 1}. ${esc(q.prompt)}</b><div class="row" style="gap:6px"><button class="icon-btn" data-eq="${q.id}" aria-label="Edit question">${icon("edit", 16)}</button><button class="icon-btn danger" data-dq="${q.id}" aria-label="Delete question">${icon("trash", 16)}</button></div></div>
       ${q.options.map((o, k) => `<div class="meta" style="margin-top:4px">${k === q.correct ? "✅" : "▫️"} ${"ABCD"[k]}. ${esc(o)}</div>`).join("")}</div>`).join("") || empty("❓", "No questions yet.")}</div>`, { wide: true });
   document.getElementById("et").onclick = () => testForm(a);
   document.getElementById("aq").onclick = () => questionForm(id, qs);
+  document.getElementById("iq").onclick = () => importForm(id, qs);
   document.getElementById("dt").onclick = async () => { if (!confirm("Delete this assessment and all attempts?")) return; const { error } = await sb.from("assessments").delete().eq("id", id); if (error) return fail(error); await loadAll(); go("#/admin/tests"); };
   document.querySelectorAll("[data-eq]").forEach(b => b.onclick = () => questionForm(id, qs, qs.find(q => q.id === b.dataset.eq)));
   document.querySelectorAll("[data-dq]").forEach(b => b.onclick = async () => { if (!confirm("Delete this question?")) return; const { error } = await sb.from("questions").delete().eq("id", b.dataset.dq); if (error) return fail(error); await loadAll(); route(); });
+}
+/* ---- bulk import of questions (JSON or plain text) ---- */
+function parseQuestions(raw) {
+  raw = raw.replace(/^\uFEFF/, "").trim();
+  if (!raw) throw new Error("Nothing to import — paste questions or choose a set.");
+  let items;
+  if (/^[\[{]/.test(raw)) {                                   // JSON
+    let j; try { j = JSON.parse(raw); } catch (e) { throw new Error("That isn't valid JSON: " + e.message); }
+    items = (Array.isArray(j) ? j : j.questions || []).map(x => ({ prompt: x.prompt ?? x.question ?? x.q, options: x.options ?? x.choices, correct: x.correct ?? x.answer, explanation: x.explanation ?? x.why ?? "" }));
+  } else {                                                      // plain text: blocks separated by a blank line
+    items = raw.split(/\r?\n\s*\r?\n/).map(b => b.trim()).filter(Boolean).map(b => {
+      const it = { prompt: "", options: [], correct: null, explanation: "" }; let ansLetter = null;
+      for (const line of b.split(/\r?\n/).map(l => l.trim()).filter(Boolean)) {
+        let m;
+        if ((m = line.match(/^(?:why|explanation)\s*[:\-]\s*(.*)$/i))) it.explanation = m[1];
+        else if ((m = line.match(/^(?:answer|ans|correct)\s*[:\-]\s*\(?([A-F])\)?\b/i))) ansLetter = m[1].toUpperCase().charCodeAt(0) - 65;
+        else if ((m = line.match(/^(\*?)\s*\(?([A-F])[\).:]\s+(.*)$/i)) && it.prompt) { if (m[1]) it.correct = it.options.length; it.options.push(m[3].trim()); }
+        else if (!it.options.length) it.prompt += (it.prompt ? " " : "") + line.replace(/^(?:q(?:uestion)?\s*\d*|\d+)\s*[:.)\-]\s*/i, "");
+      }
+      if (ansLetter != null) it.correct = ansLetter; return it;
+    });
+  }
+  if (!items.length) throw new Error("No questions found.");
+  const errs = [];
+  const out = items.map((x, i) => {
+    const prompt = String(x.prompt ?? "").trim(), options = (Array.isArray(x.options) ? x.options : []).map(o => String(o).trim()).filter(Boolean);
+    let c = x.correct;
+    if (typeof c === "string" && /^[A-F]$/i.test(c.trim())) c = c.trim().toUpperCase().charCodeAt(0) - 65;
+    else if (typeof c === "string" && options.includes(c.trim())) c = options.indexOf(c.trim());
+    else if (typeof c === "string" && /^\d+$/.test(c)) c = +c;
+    if (!prompt) errs.push(`Question ${i + 1}: missing question text`);
+    else if (options.length < 2 || options.length > 4) errs.push(`Question ${i + 1}: needs 2–4 options (found ${options.length})`);
+    else if (!Number.isInteger(c) || c < 0 || c >= options.length) errs.push(`Question ${i + 1}: correct answer not marked`);
+    return { prompt, options, correct: c, explanation: String(x.explanation ?? "").trim() };
+  });
+  if (errs.length) throw new Error(errs.slice(0, 5).join("\n") + (errs.length > 5 ? `\n…and ${errs.length - 5} more` : ""));
+  return out;
+}
+async function importForm(aid, qs) {
+  let sets = []; try { sets = await (await fetch("content/question-sets.json?v=" + Date.now())).json(); } catch (e) { /* no ready-made sets */ }
+  modal("Import questions",
+    (sets.length ? field("Ready-made question sets", `<select name="set"><option value="">— choose a set (optional) —</option>${sets.map(x => `<option value="${esc(x.file)}">${esc(x.name)}</option>`).join("")}</select>`, "Loads the questions into the box below so you can check them first.") : "") +
+    field("Questions", `<textarea name="text" rows="9" placeholder="Paste questions here, or choose a set / upload a file" style="font-family:ui-monospace,Menlo,monospace;font-size:12px"></textarea>`) +
+    field("…or upload a file", `<input type="file" name="file" accept=".json,.txt,text/plain,application/json">`) +
+    `<details class="note"><summary><b>How to format your questions</b></summary><p style="margin-top:6px">Plain text — one block per question, blank line between blocks. Put <b>*</b> before the correct option (or add an <b>Answer: B</b> line):</p><pre style="white-space:pre-wrap;margin-top:6px">1. Which route delivers medicine into a vein?
+A) Topical
+B) Sublingual
+*C) Intravenous
+D) Intradermal
+Why: IV medicines go straight into a vein.</pre><p style="margin-top:6px">JSON also works: <code>[{"prompt":"…","options":["…","…"],"correct":0,"explanation":"…"}]</code></p></details>` +
+    (qs.length ? `<div class="meta" style="margin-bottom:8px">This test already has ${qs.length} question${qs.length > 1 ? "s" : ""}. Imported ones are added after them.</div>` : ""),
+    async fd => {
+      let text = fd.get("text"); const file = fd.get("file");
+      if (file && file.size) text = await file.text();
+      const items = parseQuestions(text);
+      let pos = Math.max(0, ...qs.map(x => x.position));
+      const rows = items.map(x => ({ ...x, assessment_id: aid, position: ++pos }));
+      for (let i = 0; i < rows.length; i += 50) { const { error } = await sb.from("questions").insert(rows.slice(i, i + 50)); if (error) throw error; }
+      await loadAll(); toast(`Imported ${rows.length} questions ✅`); route();
+    }, { submit: "Import",
+      onOpen: f => { const sel = f.querySelector("[name=set]"); if (sel) sel.onchange = async () => { if (!sel.value) return; try { f.querySelector("[name=text]").value = JSON.stringify(await (await fetch("content/" + sel.value + "?v=" + Date.now())).json(), null, 1); } catch (e) { toast("Couldn't load that set"); } }; } });
 }
 function questionForm(aid, qs, q) {
   const o = q?.options || [];

@@ -1,0 +1,222 @@
+[
+ {
+  "prompt": "Why must pediatric medication doses be individualized?",
+  "options": [
+   "All children have equal body size",
+   "Children differ in weight and organ maturity",
+   "Adult doses are always suitable",
+   "Age never matters"
+  ],
+  "correct": 1,
+  "explanation": "Age, weight, clinical status and organ development influence pediatric dosing."
+ },
+ {
+  "prompt": "Which factor is commonly used for mg/kg dosing?",
+  "options": [
+   "Weight in kilograms",
+   "Height alone",
+   "Room temperature",
+   "Ward number"
+  ],
+  "correct": 0,
+  "explanation": "Use a verified current weight in kilograms."
+ },
+ {
+  "prompt": "BSA stands for:",
+  "options": [
+   "Body Salt Amount",
+   "Blood Sugar Assessment",
+   "Body Surface Area",
+   "Basic Safety Approach"
+  ],
+  "correct": 2,
+  "explanation": "Body surface area is used in some drug-specific dose calculations."
+ },
+ {
+  "prompt": "Which organs are especially relevant to drug handling?",
+  "options": [
+   "Skin and hair",
+   "Liver and kidneys",
+   "Bones and teeth",
+   "Eyes and ears"
+  ],
+  "correct": 1,
+  "explanation": "The liver metabolizes many drugs; the kidneys eliminate many drugs."
+ },
+ {
+  "prompt": "The term \"desired dose\" means:",
+  "options": [
+   "Medicine remaining in stock",
+   "Amount intended at one administration",
+   "Total fluid output",
+   "Volume of the bottle"
+  ],
+  "correct": 1,
+  "explanation": "It is the prescribed drug amount to give at one time."
+ },
+ {
+  "prompt": "A \"dosage regimen\" describes:",
+  "options": [
+   "Only the route",
+   "Only the medicine color",
+   "Dose schedule and frequency",
+   "Only the expiry date"
+  ],
+  "correct": 2,
+  "explanation": "A regimen specifies the prescribed dosing schedule."
+ },
+ {
+  "prompt": "Which is a medication administration right?",
+  "options": [
+   "Right patient",
+   "Right bed sheet",
+   "Right room paint",
+   "Right visiting hour"
+  ],
+  "correct": 0,
+  "explanation": "Confirm patient identity using approved identifiers."
+ },
+ {
+  "prompt": "What must be checked before administering a medicine?",
+  "options": [
+   "Drug name and expiry",
+   "A child’s favorite color",
+   "Number of toys",
+   "Only the ward location"
+  ],
+  "correct": 0,
+  "explanation": "Check the prescribed medication, label, expiry and relevant safety factors."
+ },
+ {
+  "prompt": "Which route delivers medication directly into a vein?",
+  "options": [
+   "Intradermal",
+   "Topical",
+   "Intravenous",
+   "Sublingual"
+  ],
+  "correct": 2,
+  "explanation": "IV medicines are administered into a vein."
+ },
+ {
+  "prompt": "Sublingual medication is placed:",
+  "options": [
+   "Under the tongue",
+   "In a muscle",
+   "Inside the bone",
+   "On the scalp"
+  ],
+  "correct": 0,
+  "explanation": "Sublingual means under the tongue."
+ },
+ {
+  "prompt": "1 gram equals:",
+  "options": [
+   "10 mg",
+   "100 mg",
+   "1000 mg",
+   "10000 mg"
+  ],
+  "correct": 2,
+  "explanation": "Multiply grams by 1000 to obtain milligrams."
+ },
+ {
+  "prompt": "1 mg equals:",
+  "options": [
+   "10 micrograms",
+   "100 micrograms",
+   "1000 micrograms",
+   "10000 micrograms"
+  ],
+  "correct": 2,
+  "explanation": "Multiply milligrams by 1000 to obtain micrograms."
+ },
+ {
+  "prompt": "The volume of medicine to give depends on:",
+  "options": [
+   "Desired dose and concentration",
+   "Patient’s shoe size",
+   "Room light",
+   "Container color"
+  ],
+  "correct": 0,
+  "explanation": "Relate desired dose to the strength on hand and corresponding volume."
+ },
+ {
+  "prompt": "Which solution group has higher tonicity than plasma?",
+  "options": [
+   "Hypotonic",
+   "Hypertonic",
+   "Colloid only",
+   "No fluid"
+  ],
+  "correct": 1,
+  "explanation": "Hypertonic solutions have higher effective tonicity than plasma."
+ },
+ {
+  "prompt": "A microdrip giving set commonly has:",
+  "options": [
+   "10 drops/mL",
+   "15 drops/mL",
+   "20 drops/mL",
+   "60 drops/mL"
+  ],
+  "correct": 3,
+  "explanation": "For the course examples, the microdrip drop factor is 60 drops/mL."
+ },
+ {
+  "prompt": "Holliday–Segar is commonly used to estimate:",
+  "options": [
+   "Maintenance fluid need",
+   "Medicine expiry",
+   "Wound length",
+   "Heart sounds"
+  ],
+  "correct": 0,
+  "explanation": "It estimates maintenance fluid volume based on weight."
+ },
+ {
+  "prompt": "Which finding can suggest IV infiltration?",
+  "options": [
+   "Swelling at cannula site",
+   "Normal clear skin",
+   "Normal IV patency",
+   "Stable temperature alone"
+  ],
+  "correct": 0,
+  "explanation": "Swelling, leakage or discomfort at the IV site warrants immediate assessment."
+ },
+ {
+  "prompt": "Which practice helps prevent high-alert medicine errors?",
+  "options": [
+   "Skip checking",
+   "Independent double-check per policy",
+   "Use an estimated weight",
+   "Ignore drug labels"
+  ],
+  "correct": 1,
+  "explanation": "Apply the institution’s independent double-check policy for high-alert drugs."
+ },
+ {
+  "prompt": "What should nurses record during IV fluid therapy?",
+  "options": [
+   "Intake and output",
+   "Only bed number",
+   "Only room temperature",
+   "Only visitor count"
+  ],
+  "correct": 0,
+  "explanation": "Track infused volume, other intake, output and the patient response."
+ },
+ {
+  "prompt": "What is important after giving medication?",
+  "options": [
+   "Never assess again",
+   "Evaluate response and document",
+   "Discard the prescription",
+   "Ignore adverse reactions"
+  ],
+  "correct": 1,
+  "explanation": "Document administration and monitor for desired effect or harm."
+ }
+]

@@ -1,0 +1,497 @@
+[
+ {
+  "prompt": "Why must pediatric medication doses be individualized?",
+  "options": [
+   "All children have equal body size",
+   "Children differ in weight and organ maturity",
+   "Adult doses are always suitable",
+   "Age never matters"
+  ],
+  "correct": 1,
+  "explanation": "Age, weight, clinical status and organ development influence pediatric dosing."
+ },
+ {
+  "prompt": "Which factor is commonly used for mg/kg dosing?",
+  "options": [
+   "Weight in kilograms",
+   "Height alone",
+   "Room temperature",
+   "Ward number"
+  ],
+  "correct": 0,
+  "explanation": "Use a verified current weight in kilograms."
+ },
+ {
+  "prompt": "BSA stands for:",
+  "options": [
+   "Body Salt Amount",
+   "Blood Sugar Assessment",
+   "Body Surface Area",
+   "Basic Safety Approach"
+  ],
+  "correct": 2,
+  "explanation": "Body surface area is used in some drug-specific dose calculations."
+ },
+ {
+  "prompt": "Which organs are especially relevant to drug handling?",
+  "options": [
+   "Skin and hair",
+   "Liver and kidneys",
+   "Bones and teeth",
+   "Eyes and ears"
+  ],
+  "correct": 1,
+  "explanation": "The liver metabolizes many drugs; the kidneys eliminate many drugs."
+ },
+ {
+  "prompt": "The term \"desired dose\" means:",
+  "options": [
+   "Medicine remaining in stock",
+   "Amount intended at one administration",
+   "Total fluid output",
+   "Volume of the bottle"
+  ],
+  "correct": 1,
+  "explanation": "It is the prescribed drug amount to give at one time."
+ },
+ {
+  "prompt": "A \"dosage regimen\" describes:",
+  "options": [
+   "Only the route",
+   "Only the medicine color",
+   "Dose schedule and frequency",
+   "Only the expiry date"
+  ],
+  "correct": 2,
+  "explanation": "A regimen specifies the prescribed dosing schedule."
+ },
+ {
+  "prompt": "Which is a medication administration right?",
+  "options": [
+   "Right patient",
+   "Right bed sheet",
+   "Right room paint",
+   "Right visiting hour"
+  ],
+  "correct": 0,
+  "explanation": "Confirm patient identity using approved identifiers."
+ },
+ {
+  "prompt": "What must be checked before administering a medicine?",
+  "options": [
+   "Drug name and expiry",
+   "A child’s favorite color",
+   "Number of toys",
+   "Only the ward location"
+  ],
+  "correct": 0,
+  "explanation": "Check the prescribed medication, label, expiry and relevant safety factors."
+ },
+ {
+  "prompt": "Which route delivers medication directly into a vein?",
+  "options": [
+   "Intradermal",
+   "Topical",
+   "Intravenous",
+   "Sublingual"
+  ],
+  "correct": 2,
+  "explanation": "IV medicines are administered into a vein."
+ },
+ {
+  "prompt": "Sublingual medication is placed:",
+  "options": [
+   "Under the tongue",
+   "In a muscle",
+   "Inside the bone",
+   "On the scalp"
+  ],
+  "correct": 0,
+  "explanation": "Sublingual means under the tongue."
+ },
+ {
+  "prompt": "1 gram equals:",
+  "options": [
+   "10 mg",
+   "100 mg",
+   "1000 mg",
+   "10000 mg"
+  ],
+  "correct": 2,
+  "explanation": "Multiply grams by 1000 to obtain milligrams."
+ },
+ {
+  "prompt": "1 mg equals:",
+  "options": [
+   "10 micrograms",
+   "100 micrograms",
+   "1000 micrograms",
+   "10000 micrograms"
+  ],
+  "correct": 2,
+  "explanation": "Multiply milligrams by 1000 to obtain micrograms."
+ },
+ {
+  "prompt": "The volume of medicine to give depends on:",
+  "options": [
+   "Desired dose and concentration",
+   "Patient’s shoe size",
+   "Room light",
+   "Container color"
+  ],
+  "correct": 0,
+  "explanation": "Relate desired dose to the strength on hand and corresponding volume."
+ },
+ {
+  "prompt": "Which solution group has higher tonicity than plasma?",
+  "options": [
+   "Hypotonic",
+   "Hypertonic",
+   "Colloid only",
+   "No fluid"
+  ],
+  "correct": 1,
+  "explanation": "Hypertonic solutions have higher effective tonicity than plasma."
+ },
+ {
+  "prompt": "A microdrip giving set commonly has:",
+  "options": [
+   "10 drops/mL",
+   "15 drops/mL",
+   "20 drops/mL",
+   "60 drops/mL"
+  ],
+  "correct": 3,
+  "explanation": "For the course examples, the microdrip drop factor is 60 drops/mL."
+ },
+ {
+  "prompt": "Holliday–Segar is commonly used to estimate:",
+  "options": [
+   "Maintenance fluid need",
+   "Medicine expiry",
+   "Wound length",
+   "Heart sounds"
+  ],
+  "correct": 0,
+  "explanation": "It estimates maintenance fluid volume based on weight."
+ },
+ {
+  "prompt": "Which finding can suggest IV infiltration?",
+  "options": [
+   "Swelling at cannula site",
+   "Normal clear skin",
+   "Normal IV patency",
+   "Stable temperature alone"
+  ],
+  "correct": 0,
+  "explanation": "Swelling, leakage or discomfort at the IV site warrants immediate assessment."
+ },
+ {
+  "prompt": "Which practice helps prevent high-alert medicine errors?",
+  "options": [
+   "Skip checking",
+   "Independent double-check per policy",
+   "Use an estimated weight",
+   "Ignore drug labels"
+  ],
+  "correct": 1,
+  "explanation": "Apply the institution’s independent double-check policy for high-alert drugs."
+ },
+ {
+  "prompt": "What should nurses record during IV fluid therapy?",
+  "options": [
+   "Intake and output",
+   "Only bed number",
+   "Only room temperature",
+   "Only visitor count"
+  ],
+  "correct": 0,
+  "explanation": "Track infused volume, other intake, output and the patient response."
+ },
+ {
+  "prompt": "What is important after giving medication?",
+  "options": [
+   "Never assess again",
+   "Evaluate response and document",
+   "Discard the prescription",
+   "Ignore adverse reactions"
+  ],
+  "correct": 1,
+  "explanation": "Document administration and monitor for desired effect or harm."
+ },
+ {
+  "prompt": "Convert 2 g into milligrams.",
+  "options": [
+   "200 mg",
+   "20 mg",
+   "20,000 mg",
+   "2000 mg"
+  ],
+  "correct": 3,
+  "explanation": "Working: 2 × 1000 = 2000 mg"
+ },
+ {
+  "prompt": "Convert 750 micrograms into milligrams.",
+  "options": [
+   "0.075 mg",
+   "0.75 mg",
+   "750 mg",
+   "7.5 mg"
+  ],
+  "correct": 1,
+  "explanation": "Working: 750 ÷ 1000 = 0.75 mg"
+ },
+ {
+  "prompt": "Convert 27 kg into pounds using 1 kg = 2.2 lb.",
+  "options": [
+   "12.3 lb",
+   "59.4 lb (≈60 lb)",
+   "24.8 lb",
+   "594 lb"
+  ],
+  "correct": 1,
+  "explanation": "Working: 27 × 2.2 = 59.4 lb"
+ },
+ {
+  "prompt": "Young’s Rule: age 10 years, adult dose 500 mg. Find the historical formula result.",
+  "options": [
+   "227.3 mg",
+   "22.7 mg",
+   "250 mg",
+   "416.7 mg"
+  ],
+  "correct": 0,
+  "explanation": "Working: 10 ÷ (10 + 12) × 500 = 227.27 mg Historical formula for calculation practice only; not a prescribing guideline."
+ },
+ {
+  "prompt": "Dilling’s Rule: age 10 years, adult dose 600 mg. Find the historical formula result.",
+  "options": [
+   "150 mg",
+   "300 mg",
+   "600 mg",
+   "30 mg"
+  ],
+  "correct": 1,
+  "explanation": "Working: 10 ÷ 20 × 600 = 300 mg Historical formula for calculation practice only; not a prescribing guideline."
+ },
+ {
+  "prompt": "Clark’s Rule: weight about 60 lb, adult dose 500 mg. Find the historical formula result.",
+  "options": [
+   "300 mg",
+   "20 mg",
+   "200 mg",
+   "750 mg"
+  ],
+  "correct": 2,
+  "explanation": "Working: 60 ÷ 150 × 500 = 200 mg Historical formula for calculation practice only; not a prescribing guideline."
+ },
+ {
+  "prompt": "Fried’s Rule: age 6 months, adult dose 500 mg. Find the historical formula result.",
+  "options": [
+   "250 mg",
+   "20 mg",
+   "2 mg",
+   "200 mg"
+  ],
+  "correct": 1,
+  "explanation": "Working: 6 ÷ 150 × 500 = 20 mg Historical formula for calculation practice only; not a prescribing guideline."
+ },
+ {
+  "prompt": "BSA method: child BSA 0.41 m², adult dose 250 mg; adult BSA 1.73 m².",
+  "options": [
+   "592 mg",
+   "59.2 mg",
+   "1055 mg",
+   "102.5 mg"
+  ],
+  "correct": 1,
+  "explanation": "Working: 0.41 ÷ 1.73 × 250 ≈ 59.25 mg Historical formula for calculation practice only; not a prescribing guideline."
+ },
+ {
+  "prompt": "Gentamicin ordered 20 mg; supply 80 mg in 2 mL. How many mL?",
+  "options": [
+   "0.5 mL",
+   "4 mL",
+   "0.25 mL",
+   "1 mL"
+  ],
+  "correct": 0,
+  "explanation": "Working: 20 ÷ 80 × 2 = 0.5 mL"
+ },
+ {
+  "prompt": "Ceftriaxone ordered 250 mg; prepared concentration 1 g in 10 mL. How many mL?",
+  "options": [
+   "25 mL",
+   "0.25 mL",
+   "4 mL",
+   "2.5 mL"
+  ],
+  "correct": 3,
+  "explanation": "Working: 250 ÷ 1000 × 10 = 2.5 mL"
+ },
+ {
+  "prompt": "Holliday–Segar: calculate daily maintenance volume for a 7 kg child.",
+  "options": [
+   "1000 mL/day",
+   "70 mL/day",
+   "350 mL/day",
+   "700 mL/day"
+  ],
+  "correct": 3,
+  "explanation": "Working: 7 × 100 = 700 mL/day"
+ },
+ {
+  "prompt": "Holliday–Segar: calculate daily maintenance volume for a 16 kg child.",
+  "options": [
+   "800 mL/day",
+   "1500 mL/day",
+   "1300 mL/day",
+   "1600 mL/day"
+  ],
+  "correct": 2,
+  "explanation": "Working: (10 × 100) + (6 × 50) = 1300 mL/day"
+ },
+ {
+  "prompt": "Holliday–Segar: calculate daily maintenance volume for a 24 kg child.",
+  "options": [
+   "2400 mL/day",
+   "1500 mL/day",
+   "1200 mL/day",
+   "1580 mL/day"
+  ],
+  "correct": 3,
+  "explanation": "Working: 1000 + 500 + (4 × 20) = 1580 mL/day"
+ },
+ {
+  "prompt": "Calculate hourly rate for 700 mL over 24 hours.",
+  "options": [
+   "58.3 mL/hour",
+   "16.8 mL/hour",
+   "29.2 mL/hour",
+   "24.0 mL/hour"
+  ],
+  "correct": 2,
+  "explanation": "Working: 700 ÷ 24 ≈ 29.17 mL/hour"
+ },
+ {
+  "prompt": "Calculate hourly rate for 300 mL over 24 hours.",
+  "options": [
+   "125 mL/hour",
+   "25 mL/hour",
+   "7.2 mL/hour",
+   "12.5 mL/hour"
+  ],
+  "correct": 3,
+  "explanation": "Working: 300 ÷ 24 = 12.5 mL/hour"
+ },
+ {
+  "prompt": "Microdrip 60 drops/mL: 700 mL over 24 hours. Find drops/minute.",
+  "options": [
+   "≈29 drops/min",
+   "350 drops/min",
+   "14 drops/min",
+   "58 drops/min"
+  ],
+  "correct": 0,
+  "explanation": "Working: 700 × 60 ÷ (24 × 60) ≈ 29.2 drops/min"
+ },
+ {
+  "prompt": "Microdrip 60 drops/mL: 300 mL over 24 hours. Find drops/minute.",
+  "options": [
+   "≈13 drops/min",
+   "25 drops/min",
+   "300 drops/min",
+   "7 drops/min"
+  ],
+  "correct": 0,
+  "explanation": "Working: 300 × 60 ÷ (24 × 60) = 12.5; round per policy"
+ },
+ {
+  "prompt": "A 1200 g baby is prescribed 10 mL/kg enteral feeds/day. Calculate daily feed volume.",
+  "options": [
+   "1.2 mL/day",
+   "10 mL/day",
+   "120 mL/day",
+   "12 mL/day"
+  ],
+  "correct": 3,
+  "explanation": "Working: 1.2 kg × 10 mL/kg = 12 mL/day"
+ },
+ {
+  "prompt": "A 1200 g baby is prescribed 30 mL/kg enteral feeds/day. Calculate daily feed volume.",
+  "options": [
+   "3.6 mL/day",
+   "30 mL/day",
+   "360 mL/day",
+   "36 mL/day"
+  ],
+  "correct": 3,
+  "explanation": "Working: 1.2 kg × 30 mL/kg = 36 mL/day"
+ },
+ {
+  "prompt": "Prescribed total fluid 150 mL/day; enteral intake 60 mL/day. Find IV remainder.",
+  "options": [
+   "60 mL/day",
+   "150 mL/day",
+   "90 mL/day",
+   "210 mL/day"
+  ],
+  "correct": 2,
+  "explanation": "Working: 150 − 60 = 90 mL/day"
+ },
+ {
+  "prompt": "A child’s wristband differs from the medication chart. What should the nurse do?",
+  "options": [
+   "Give the medication and correct the wristband later.",
+   "Change the wristband to match the chart, then proceed.",
+   "Stop and verify patient identity before administration.",
+   "Give the medication if the child answers to the name on the chart."
+  ],
+  "correct": 2,
+  "explanation": "The right patient must be established using institutional identifiers."
+ },
+ {
+  "prompt": "A pediatric IV site is newly swollen and cool. What is the priority response?",
+  "options": [
+   "Increase the infusion rate to push the fluid through.",
+   "Stop the infusion and assess for infiltration; follow local IV-site protocol.",
+   "Cover the site with a bandage and continue the infusion.",
+   "Continue the infusion and recheck the site after one hour."
+  ],
+  "correct": 1,
+  "explanation": "Do not continue an infusion through a suspected infiltrated cannula."
+ },
+ {
+  "prompt": "A calculated dose appears much higher than the usual pediatric range. What next?",
+  "options": [
+   "Halve the dose without telling anyone.",
+   "Give the dose more slowly to be safe.",
+   "Withhold administration and clarify the order using approved drug references.",
+   "Give the dose as written because the prescriber ordered it."
+  ],
+  "correct": 2,
+  "explanation": "Recheck patient weight, units, concentration, dose range and prescriber order."
+ },
+ {
+  "prompt": "A child receiving IV fluid develops puffy eyes, increasing edema and breathing difficulty. What should be done?",
+  "options": [
+   "Increase the IV rate to flush the extra fluid out.",
+   "Continue as ordered and recheck at the next routine round.",
+   "Give extra oral fluids to the child.",
+   "Urgently assess and escalate possible fluid overload; follow the clinical team’s orders."
+  ],
+  "correct": 3,
+  "explanation": "Monitor vital signs, oxygenation, fluid balance, weight and clinical condition."
+ },
+ {
+  "prompt": "A child develops a rash and breathing difficulty after medication. What is the priority?",
+  "options": [
+   "Give an oral antihistamine only and continue the medication.",
+   "Stop the medication and initiate an urgent emergency response per protocol.",
+   "Give the next dose and keep watching the rash.",
+   "Wait 30 minutes to see whether it settles."
+  ],
+  "correct": 1,
+  "explanation": "Recognize a possible severe allergic reaction, assess ABCs and report immediately."
+ }
+]
