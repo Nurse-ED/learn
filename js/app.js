@@ -8,7 +8,7 @@ const sb = configured ? supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANO
 
 /* ---------- state ---------- */
 const S = { user: null, me: null, profiles: [], courses: [], modules: [], lessons: [], enrolls: [],
-  progress: [], assessments: [], attempts: [], counts: {}, filter: "All", q: "", quiz: null, authMode: "login" };
+  progress: [], assessments: [], attempts: [], counts: {}, filter: "All", q: "", quiz: null, authMode: "login", openMod: {} };
 
 /* ---------- utils ---------- */
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -32,10 +32,11 @@ const P = {
   check: '<path d="M5 12l5 5 9-10"/>', upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
   key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/>', search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>',
   grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  slides: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/>',
   cap: '<path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5"/>',
 };
 const icon = (n, s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || ""}</svg>`;
-const TYPE = { video: ["play", "Video"], pdf: ["file", "PDF"], text: ["text", "Reading"], flashcards: ["cards", "Flash cards"], pamphlet: ["image", "Pamphlet"], image: ["image", "Image"], link: ["link", "Link"] };
+const TYPE = { video: ["play", "Video"], pdf: ["file", "PDF"], ppt: ["slides", "PowerPoint"], text: ["text", "Reading"], flashcards: ["cards", "Flash cards"], pamphlet: ["image", "Pamphlet"], image: ["image", "Image"], link: ["link", "Link"] };
 const toast = (m) => { const t = document.getElementById("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2600); };
 const tint = (i) => "t" + (Math.abs(i) % 5);
 const hash = s => [...String(s)].reduce((a, c) => a + c.charCodeAt(0), 0);
@@ -62,6 +63,10 @@ function embed(url, type) {
     return `<div class="vid"><iframe src="https://drive.google.com/file/d/${m[1]}/preview" allowfullscreen loading="lazy"></iframe></div>`;
   if ((m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)))
     return `<div class="vid"><iframe src="https://player.vimeo.com/video/${m[1]}" allowfullscreen loading="lazy"></iframe></div>`;
+  if ((m = url.match(/docs\.google\.com\/presentation\/d\/([\w-]+)/)))
+    return `<div class="vid"><iframe src="https://docs.google.com/presentation/d/${m[1]}/embed?start=false&loop=false" title="Slides" allowfullscreen loading="lazy"></iframe></div>`;
+  if (type === "ppt" || /\.(pptx?|pps|ppsx)(\?|$)/i.test(url))
+    return `<div class="vid"><iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}" title="Presentation" allowfullscreen loading="lazy"></iframe></div><a class="btn ghost block" style="margin-top:10px" href="${esc(url)}" download target="_blank" rel="noopener">${icon("upload", 16)} Download presentation</a><p class="meta" style="margin-top:8px;text-align:center">If the slides don't load, use the download button.</p>`;
   if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) return `<video class="plain" controls playsinline src="${esc(url)}"></video>`;
   if (type === "pdf" || /\.pdf(\?|$)/i.test(url))
     return `<iframe class="pdf" src="${esc(url)}" title="PDF"></iframe><a class="btn ghost block" style="margin-top:10px" href="${esc(url)}" target="_blank" rel="noopener">${icon("file")} Open PDF in new tab</a>`;
@@ -269,13 +274,26 @@ function viewCourse(id) {
     ${!ls.length ? empty("🚧", "Lessons are coming soon.") : en
       ? `<a class="btn block" href="#/learn/${(nx || ls[0]).id}">${p.done === 0 ? "Start course" : nx ? "Continue course" : "Review course"} ${icon("chev", 18)}</a>`
       : `<button class="btn block" data-enroll="${id}">Enroll &amp; start course</button>`}
-    <div class="sec"><h2>Course content</h2><span class="meta">${p.done}/${p.total} done</span></div>
-    <div class="stack">${modsOf(id).map(m => `<div class="card"><b>${esc(m.title)}</b><div class="stack" style="margin-top:8px">${lessonsOfMod(m.id).map(l => {
-      const t = TYPE[l.type] || TYPE.text, ok = d.has(l.id);
-      return `<a class="item" style="box-shadow:none" href="#/learn/${l.id}"><div class="tile sm ${ok ? "t2" : "t0"}">${icon(ok ? "check" : t[0], 18)}</div><div class="grow"><b class="ellipsis">${esc(l.title)}</b><small>${t[1]} · ${l.minutes} min</small></div><span class="chev">${icon("chev")}</span></a>`;
-    }).join("") || `<span class="meta">No lessons yet</span>`}</div></div>`).join("")}</div>
+    <div class="sec"><h2>Course content</h2><span class="meta">${p.done}/${p.total} lessons done</span></div>
+    <div id="mods"></div>
     ${asm.length ? `<div class="sec"><h2>Assessments</h2></div><div class="stack">${asm.map(a => assessRow(a, uid)).join("")}</div>` : ""}`);
   document.querySelector("[data-enroll]")?.addEventListener("click", async () => { await enroll(id); go("#/learn/" + ls[0].id); });
+  const drawMods = () => {
+    const mods = modsOf(id), open = mods.find(m => m.id === S.openMod[id]);
+    document.getElementById("mods").innerHTML = mods.length ? `
+      <div class="mods" role="tablist" aria-label="Modules">${mods.map((m, n) => {
+        const lm = lessonsOfMod(m.id), dn = lm.filter(l => d.has(l.id)).length, all = lm.length > 0 && dn === lm.length;
+        return `<button class="mod ${open?.id === m.id ? "on" : ""} ${all ? "done" : ""}" role="tab" aria-selected="${open?.id === m.id}" data-mod="${m.id}" title="${esc(m.title)}" aria-label="${esc(m.title)}, ${dn} of ${lm.length} lessons done">
+          <span class="mn">${all ? icon("check", 14) : n + 1}</span><span class="mt">${esc(m.title)}</span><span class="mp">${dn}/${lm.length}</span></button>`;
+      }).join("")}</div>
+      ${open ? `<div class="card" style="margin-top:14px"><b>${esc(open.title)}</b><div class="stack" style="margin-top:10px">${lessonsOfMod(open.id).map(l => {
+        const t = TYPE[l.type] || TYPE.text, ok = d.has(l.id);
+        return `<a class="item" style="box-shadow:none" href="#/learn/${l.id}"><div class="tile sm ${ok ? "t2" : "t0"}">${icon(ok ? "check" : t[0], 18)}</div><div class="grow"><b class="ellipsis">${esc(l.title)}</b><small>${t[1]} · ${l.minutes} min</small></div><span class="chev">${icon("chev")}</span></a>`;
+      }).join("") || `<span class="meta">No lessons in this module yet.</span>`}</div></div>` : `<p class="meta" style="text-align:center;margin-top:12px">Tap a module to see its lessons</p>`}`
+      : empty("🧱", "Modules are coming soon.");
+    document.querySelectorAll("[data-mod]").forEach(b => b.onclick = () => { S.openMod[id] = S.openMod[id] === b.dataset.mod ? null : b.dataset.mod; drawMods(); });
+  };
+  drawMods();
 }
 async function enroll(cid) {
   if (isEnrolled(cid)) return;
@@ -291,6 +309,7 @@ function viewLesson(id) {
   const c = S.courses.find(x => x.id === l.course_id), uid = S.user.id, ls = ordered(c.id), i = ls.findIndex(x => x.id === id);
   const done = doneSet(uid).has(id), t = TYPE[l.type] || TYPE.text, nx = ls[i + 1];
   if (!isEnrolled(c.id)) enroll(c.id);
+  S.openMod[c.id] = l.module_id;
   flashIdx = 0;
   let body = "";
   if (l.type === "text") body = `<div class="prose">${md(l.body || "")}</div>`;
@@ -365,7 +384,7 @@ function drawQuiz() {
   }
   const q = z.qs[z.i], sel = z.ans[q.id], last = z.i === z.qs.length - 1;
   shell(`${top(esc(a.title), { back: "#/assess", sub: `Question ${z.i + 1} of ${z.qs.length}` })}${bar(Math.round(z.i * 100 / z.qs.length))}
-    <div class="card" style="margin-top:14px"><h2 style="font-size:15.5px">${esc(q.prompt)}</h2>
+    <div class="card" style="margin-top:14px"><h2 style="font-size:13.5px">${esc(q.prompt)}</h2>
     ${q.options.map((o, k) => `<button class="opt ${sel === k ? "sel" : ""}" data-k="${k}" aria-pressed="${sel === k}"><span class="dot">${"ABCD"[k]}</span>${esc(o)}</button>`).join("")}</div>
     <div class="row" style="margin-top:18px">${z.i ? `<button class="btn ghost" id="qp">${icon("back", 18)}</button>` : ""}<button class="btn grow" id="qn" ${sel == null ? "disabled" : ""}>${last ? "Submit" : "Next"}</button></div>`, { nav: false });
   document.querySelectorAll("[data-k]").forEach(b => b.onclick = () => { z.ans[q.id] = +b.dataset.k; drawQuiz(); });
@@ -386,7 +405,7 @@ function viewProfile() {
     [S.attempts.some(a => a.user_id === m.id && a.passed), "🏅", "Passed a test"]];
   shell(`${top("Profile")}
     <div class="card"><div class="row"><div class="tile" style="width:64px;height:64px;border-radius:50%;font-weight:800;color:var(--p-dark);font-size:22px">${esc(initials(m.full_name))}</div>
-      <div class="grow"><b style="font-size:16px">${esc(m.full_name)}</b><div class="meta">@${esc(m.username)}</div><div class="meta trunc">${esc(m.email)}</div></div></div></div>
+      <div class="grow"><b style="font-size:14px">${esc(m.full_name)}</b><div class="meta">@${esc(m.username)}</div><div class="meta trunc">${esc(m.email)}</div></div></div></div>
     <div class="stats" style="margin-top:12px"><div class="stat"><b>${st.courses}</b><small>Courses</small></div><div class="stat"><b>${st.lessons}</b><small>Lessons</small></div><div class="stat"><b>${st.streak}</b><small>Streak</small></div></div>
     <div class="sec"><h2>Achievements</h2></div>
     <div class="stats" style="grid-template-columns:repeat(4,1fr)">${ach.map(a => `<div class="stat" style="${a[0] ? "" : "opacity:.4;filter:grayscale(1)"}"><b>${a[1]}</b><small>${a[2]}</small></div>`).join("")}</div>
@@ -491,7 +510,7 @@ function lessonForm(cid, mid, l) {
     field("Title", `<input type="text" name="title" required value="${esc(l?.title)}">`) +
     field("Content type", `<select name="type">${Object.entries(TYPE).map(([k, v]) => `<option value="${k}" ${k === type ? "selected" : ""}>${v[1]}</option>`).join("")}</select>`) +
     field("Link (URL)", `<input type="url" name="url" placeholder="https://…" value="${esc(l?.url)}">`, "YouTube, Google Drive, Vimeo, direct .mp4/.pdf/image link. YouTube 'Unlisted' videos are free and unlimited.", "f-url") +
-    field("…or upload a file", `<input type="file" name="file" accept=".pdf,image/*,video/mp4,video/webm">`, "Up to 50 MB on the free plan. For big videos use a YouTube/Drive link instead.", "f-file") +
+    field("…or upload a file", `<input type="file" name="file" accept=".pdf,.ppt,.pptx,image/*,video/mp4,video/webm">`, "PowerPoint (.ppt/.pptx), PDF, image or small video — up to 50 MB. Keep PowerPoints under ~10 MB so the in-app viewer works. For big videos use a YouTube/Drive link.", "f-file") +
     field("Text / notes", `<textarea name="body" rows="6" placeholder="Use '# Heading', '- bullet' and **bold**">${esc(l?.body)}</textarea>`, "", "f-body") +
     field("Flash cards", `<textarea name="cards" rows="6" placeholder="Question | Answer&#10;One card per line">${esc(cards)}</textarea>`, "One card per line: Question | Answer", "f-cards") +
     field("Estimated minutes", `<input type="number" name="minutes" min="1" max="600" value="${l?.minutes || 5}">`),
@@ -501,7 +520,7 @@ function lessonForm(cid, mid, l) {
       if (file && file.size) {
         if (file.size > 50 * 1024 * 1024) throw new Error("File is over 50 MB. Upload it to YouTube/Drive and paste the link instead.");
         const path = `${Date.now()}-${file.name.replace(/[^\w.\-]+/g, "_")}`;
-        const { error } = await sb.storage.from("course-files").upload(path, file, { contentType: file.type }); if (error) throw error;
+        const { error } = await sb.storage.from("course-files").upload(path, file, { contentType: file.type || undefined }); if (error) throw error;
         url = sb.storage.from("course-files").getPublicUrl(path).data.publicUrl;
       }
       let cardsArr = [];

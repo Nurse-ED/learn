@@ -40,7 +40,7 @@ create table if not exists lessons (
   course_id uuid not null references courses(id) on delete cascade,
   module_id uuid not null references modules(id) on delete cascade,
   title     text not null,
-  type      text not null check (type in ('video','pdf','text','flashcards','pamphlet','image','link')),
+  type      text not null check (type in ('video','pdf','ppt','text','flashcards','pamphlet','image','link')),
   url       text,
   body      text,
   cards     jsonb not null default '[]',
